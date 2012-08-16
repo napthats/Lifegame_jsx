@@ -103,21 +103,61 @@ _Main$.prototype = new _Main;
  * @param {Array.<undefined|!string>} args
  */
 _Main.main$AS = function (args) {
+	/** @type {HTMLCanvasElement} */
+	var canvas;
+	/** @type {CanvasRenderingContext2D} */
+	var ctx;
+	var onmessage;
 	/** @type {WebSocket} */
 	var ws;
-	ws = new WebSocket("ws://localhost:8080/ws/");
-	ws.onmessage = (function (e) {
+	var tick;
+	canvas = (function (o) { return o instanceof HTMLCanvasElement ? o : null; })((function (o) { return o instanceof HTMLElement ? o : null; })(dom.document.getElementById('stage')));
+	canvas.width = 300;
+	canvas.height = 300;
+	ctx = (function (o) { return o instanceof CanvasRenderingContext2D ? o : null; })(canvas.getContext("2d"));
+	onmessage = (function (e) {
 		/** @type {MessageEvent} */
-		var em;
-		em = (function (o) { return o instanceof MessageEvent ? o : null; })(e);
-		dom.window.alert(em.data + "");
+		var me;
+		/** @type {Array.<undefined|!string>} */
+		var message_array;
+		/** @type {!number} */
+		var width;
+		/** @type {!number} */
+		var height;
+		/** @type {!number} */
+		var cell_width;
+		/** @type {!number} */
+		var cell_height;
+		/** @type {Array.<undefined|!string>} */
+		var board_data_array;
+		/** @type {!number} */
+		var i;
+		me = (function (o) { return o instanceof MessageEvent ? o : null; })(e);
+		message_array = (me.data + "").split(":");
+		width = message_array[0] | 0;
+		height = message_array[1] | 0;
+		cell_width = 300 / width;
+		cell_height = 300 / height;
+		board_data_array = message_array[2].split("");
+		ctx.clearRect(0, 0, 300, 300);
+		for (i = 0; i < board_data_array.length; ++ i) {
+			if (board_data_array[i] == '+') {
+				ctx.fillRect(cell_width * (i % width), cell_height * Math.floor(i / width), cell_width, cell_height);
+			}
+		}
 	});
+	ws = new WebSocket("ws://localhost:8080/ws/");
+	ws.onmessage = onmessage;
 	dom.window.addEventListener('unload', (function (e) {
 		ws.close();
 		ws = null;
 	}), false);
-	ws.onopen = (function (e) {
+	tick = (function () {
 		ws.send("hi");
+		dom.window.setTimeout(tick, 1000);
+	});
+	ws.onopen = (function (e) {
+		tick();
 	});
 };
 
@@ -185,6 +225,8 @@ function js$() {
 
 js$.prototype = new js;
 
+_Main.canvas_width = 300;
+_Main.canvas_height = 300;
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });
