@@ -116,9 +116,9 @@ _Main.main$AS = function (args) {
 		ws.close();
 		ws = null;
 	}), false);
-	dom.window.setTimeout((function () {
+	ws.onopen = (function (e) {
 		ws.send("hi");
-	}), 1000);
+	});
 };
 
 var _Main$main$AS = _Main.main$AS;
