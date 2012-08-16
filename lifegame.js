@@ -107,15 +107,16 @@ _Main.main$AS = function (args) {
 	var canvas;
 	/** @type {CanvasRenderingContext2D} */
 	var ctx;
-	var onmessage;
+	var onmessage_handler;
 	/** @type {WebSocket} */
 	var ws;
+	var mousedown_handler;
 	var tick;
 	canvas = (function (o) { return o instanceof HTMLCanvasElement ? o : null; })((function (o) { return o instanceof HTMLElement ? o : null; })(dom.document.getElementById('stage')));
 	canvas.width = 300;
 	canvas.height = 300;
 	ctx = (function (o) { return o instanceof CanvasRenderingContext2D ? o : null; })(canvas.getContext("2d"));
-	onmessage = (function (e) {
+	onmessage_handler = (function (e) {
 		/** @type {MessageEvent} */
 		var me;
 		/** @type {Array.<undefined|!string>} */
@@ -147,14 +148,29 @@ _Main.main$AS = function (args) {
 		}
 	});
 	ws = new WebSocket("ws://localhost:8080/ws/");
-	ws.onmessage = onmessage;
+	ws.onmessage = onmessage_handler;
 	dom.window.addEventListener('unload', (function (e) {
 		ws.close();
 		ws = null;
 	}), false);
+	mousedown_handler = (function (e) {
+		/** @type {MouseEvent} */
+		var me;
+		/** @type {!number} */
+		var width_ord;
+		/** @type {!number} */
+		var height_ord;
+		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
+		width_ord = Math.floor(me.clientX / 300 * 10);
+		height_ord = Math.floor(me.clientY / 300 * 10);
+		if (width_ord < 10 && height_ord < 10) {
+			ws.send("#" + (width_ord + "") + ":" + (height_ord + ""));
+		}
+	});
+	dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
 	tick = (function () {
-		ws.send("hi");
-		dom.window.setTimeout(tick, 1000);
+		ws.send("show");
+		dom.window.setTimeout(tick, 100);
 	});
 	ws.onopen = (function (e) {
 		tick();

@@ -14,7 +14,7 @@ final class _Main {
     assert ctx != null;
 
     //message handler for websocket
-    var onmessage = function(e: Event): void {
+    var onmessage_handler = function(e: Event): void {
       var me = e as MessageEvent;
       var message_array = (me.data as string).split(":");
       var width = message_array[0] as int;
@@ -38,7 +38,7 @@ final class _Main {
 
     //initialize websocket
     var ws = new WebSocket("ws://localhost:8080/ws/");
-    ws.onmessage = onmessage;
+    ws.onmessage = onmessage_handler;
     dom.window.addEventListener(
       'unload',
       function(e: Event) {
@@ -48,10 +48,24 @@ final class _Main {
       false
     );
 
+    //message handler for mouse
+    var mousedown_handler = function(e: Event): void {
+      var me = e as MouseEvent;
+      //TODO: decide gameboard width/height from server messages
+      var board_width = 10;
+      var board_height = 10;
+      var width_ord = Math.floor((me.clientX / _Main.canvas_width) * board_width);
+      var height_ord = Math.floor((me.clientY / _Main.canvas_height) * board_height);
+      if (width_ord < board_width && height_ord < board_height) {
+        ws.send("#" + (width_ord as string) + ":" + (height_ord as string));
+      }
+    };
+    dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
+
     //main loop after websocket open
     var tick = function(): void {
-      ws.send("hi");
-      dom.window.setTimeout(tick, 1000);
+      ws.send("show");
+      dom.window.setTimeout(tick, 100);
     };
     ws.onopen = function(e: Event){tick();};
   }
