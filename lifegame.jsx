@@ -1,8 +1,8 @@
 import 'js/web.jsx';
 
 final class _Main {
-  static const canvas_width = 300;
-  static const canvas_height = 300;
+  static const canvas_width = 600;
+  static const canvas_height = 600;
 
   static function main(args : string[]) : void {
     //initialize canvas
@@ -37,7 +37,8 @@ final class _Main {
     };
 
     //initialize websocket
-    var ws = new WebSocket("ws://localhost:8080/ws/");
+//    var ws = new WebSocket("ws://localhost:8080/ws/");
+    var ws = new WebSocket("ws://napthats.com:8080/ws/");
     ws.onmessage = onmessage_handler;
     dom.window.addEventListener(
       'unload',
@@ -52,8 +53,8 @@ final class _Main {
     var mousedown_handler = function(e: Event): void {
       var me = e as MouseEvent;
       //TODO: decide gameboard width/height from server messages
-      var board_width = 10;
-      var board_height = 10;
+      var board_width = 60;
+      var board_height = 60;
       var width_ord = Math.floor((me.clientX / _Main.canvas_width) * board_width);
       var height_ord = Math.floor((me.clientY / _Main.canvas_height) * board_height);
       if (width_ord < board_width && height_ord < board_height) {

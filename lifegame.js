@@ -113,8 +113,8 @@ _Main.main$AS = function (args) {
 	var mousedown_handler;
 	var tick;
 	canvas = (function (o) { return o instanceof HTMLCanvasElement ? o : null; })((function (o) { return o instanceof HTMLElement ? o : null; })(dom.document.getElementById('stage')));
-	canvas.width = 300;
-	canvas.height = 300;
+	canvas.width = 600;
+	canvas.height = 600;
 	ctx = (function (o) { return o instanceof CanvasRenderingContext2D ? o : null; })(canvas.getContext("2d"));
 	onmessage_handler = (function (e) {
 		/** @type {MessageEvent} */
@@ -137,17 +137,17 @@ _Main.main$AS = function (args) {
 		message_array = (me.data + "").split(":");
 		width = message_array[0] | 0;
 		height = message_array[1] | 0;
-		cell_width = 300 / width;
-		cell_height = 300 / height;
+		cell_width = 600 / width;
+		cell_height = 600 / height;
 		board_data_array = message_array[2].split("");
-		ctx.clearRect(0, 0, 300, 300);
+		ctx.clearRect(0, 0, 600, 600);
 		for (i = 0; i < board_data_array.length; ++ i) {
 			if (board_data_array[i] == '+') {
 				ctx.fillRect(cell_width * (i % width), cell_height * Math.floor(i / width), cell_width, cell_height);
 			}
 		}
 	});
-	ws = new WebSocket("ws://localhost:8080/ws/");
+	ws = new WebSocket("ws://napthats.com:8080/ws/");
 	ws.onmessage = onmessage_handler;
 	dom.window.addEventListener('unload', (function (e) {
 		ws.close();
@@ -161,9 +161,9 @@ _Main.main$AS = function (args) {
 		/** @type {!number} */
 		var height_ord;
 		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
-		width_ord = Math.floor(me.clientX / 300 * 10);
-		height_ord = Math.floor(me.clientY / 300 * 10);
-		if (width_ord < 10 && height_ord < 10) {
+		width_ord = Math.floor(me.clientX / 600 * 60);
+		height_ord = Math.floor(me.clientY / 600 * 60);
+		if (width_ord < 60 && height_ord < 60) {
 			ws.send("#" + (width_ord + "") + ":" + (height_ord + ""));
 		}
 	});
@@ -241,8 +241,8 @@ function js$() {
 
 js$.prototype = new js;
 
-_Main.canvas_width = 300;
-_Main.canvas_height = 300;
+_Main.canvas_width = 600;
+_Main.canvas_height = 600;
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });
