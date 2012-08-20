@@ -109,8 +109,8 @@ _Main.position_to_cell_ord$NN = function (x, y) {
 	var width_ord;
 	/** @type {!number} */
 	var height_ord;
-	width_ord = Math.floor(x / 600 * 59);
-	height_ord = Math.floor(y / 600 * 59);
+	width_ord = Math.floor(x / 600 * 60 - 1);
+	height_ord = Math.floor(y / 600 * 60 - 1);
 	return { x: width_ord, y: height_ord };
 };
 
@@ -128,6 +128,7 @@ _Main.main$AS = function (args) {
 	/** @type {WebSocket} */
 	var ws;
 	var mousedown_handler;
+	var mousemove_handler;
 	var tick;
 	canvas = (function (o) { return o instanceof HTMLCanvasElement ? o : null; })((function (o) { return o instanceof HTMLElement ? o : null; })(dom.document.getElementById('stage')));
 	canvas.width = 600;
@@ -158,10 +159,18 @@ _Main.main$AS = function (args) {
 		cell_height = 600 / height;
 		board_data_array = message_array[2].split("");
 		ctx.clearRect(0, 0, 600, 600);
+		_Main.prev_data = board_data_array;
 		for (i = 0; i < board_data_array.length; ++ i) {
 			if (board_data_array[i] == '+') {
 				ctx.fillRect(cell_width * (i % width), cell_height * Math.floor(i / width), cell_width, cell_height);
 			}
+		}
+		if (_Main.prev_data[_Main.selected_cell.x + 60 * _Main.selected_cell.y] == '+') {
+			ctx.clearRect(cell_width * _Main.selected_cell.x, cell_height * Math.floor(_Main.selected_cell.y), cell_width, cell_height);
+			ctx.fillRect(cell_width * _Main.selected_cell.x + 1, cell_height * Math.floor(_Main.selected_cell.y) + 1, cell_width - 2, cell_height - 2);
+		} else {
+			ctx.fillRect(cell_width * _Main.selected_cell.x, cell_height * Math.floor(_Main.selected_cell.y), cell_width, cell_height);
+			ctx.clearRect(cell_width * _Main.selected_cell.x + 1, cell_height * Math.floor(_Main.selected_cell.y) + 1, cell_width - 2, cell_height - 2);
 		}
 	});
 	ws = new WebSocket("ws://napthats.com:8080/ws/");
@@ -182,6 +191,18 @@ _Main.main$AS = function (args) {
 		}
 	});
 	dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
+	mousemove_handler = (function (e) {
+		/** @type {MouseEvent} */
+		var me;
+		/** @type {Object.<string, undefined|!number>} */
+		var ord;
+		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
+		ord = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
+		if (ord.x < 60 && ord.y < 60) {
+			_Main.selected_cell = ord;
+		}
+	});
+	dom.window.document.body.addEventListener('mousemove', mousemove_handler, false);
 	tick = (function () {
 		ws.send("show");
 		dom.window.setTimeout(tick, 100);
@@ -262,6 +283,9 @@ $__jsx_lazy_init(_Main, "selected_cell", function () {
 });
 _Main.board_width = 60;
 _Main.board_height = 60;
+$__jsx_lazy_init(_Main, "prev_data", function () {
+	return [ "" ];
+});
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });

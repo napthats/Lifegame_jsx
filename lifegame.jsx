@@ -6,6 +6,8 @@ final class _Main {
   static var selected_cell = {x: 0, y: 0};
   static const board_width = 60;
   static const board_height = 60;
+  //TODO: initialize with safe data
+  static var prev_data = [""];
 
   static function position_to_cell_ord(x: number, y: number): Map.<number> {
     //TODO: decide gameboard width/height from server messages
@@ -33,7 +35,9 @@ final class _Main {
       var cell_height = _Main.canvas_height / height;
       var board_data_array = (message_array[2]).split("");
 
+      
       ctx.clearRect(0, 0, _Main.canvas_width, _Main.canvas_height);
+      _Main.prev_data = board_data_array;
       for(var i = 0; i < board_data_array.length; ++i) {
         if (board_data_array[i] == '+') {
           ctx.fillRect(
@@ -43,6 +47,35 @@ final class _Main {
             cell_height
           );
         }
+      }
+
+      if (_Main.prev_data[_Main.selected_cell['x'] + _Main.board_width * _Main.selected_cell['y']] == '+') {
+        ctx.clearRect(
+          cell_width * (_Main.selected_cell['x']),
+          cell_height * Math.floor(_Main.selected_cell['y']),
+          cell_width,
+          cell_height
+        );
+        ctx.fillRect(
+          cell_width * (_Main.selected_cell['x']) + 1,
+          cell_height * Math.floor(_Main.selected_cell['y']) + 1,
+          cell_width - 2,
+          cell_height - 2
+        );
+      }
+      else {
+        ctx.fillRect(
+          cell_width * (_Main.selected_cell['x']),
+          cell_height * Math.floor(_Main.selected_cell['y']),
+          cell_width,
+          cell_height
+        );
+        ctx.clearRect(
+          cell_width * (_Main.selected_cell['x']) + 1,
+          cell_height * Math.floor(_Main.selected_cell['y']) + 1,
+          cell_width - 2,
+          cell_height - 2
+        );
       }
     };
 
@@ -68,10 +101,61 @@ final class _Main {
       }
     };
     dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
-/*    var mousemove_handler = function(e: Event): void {
+    var mousemove_handler = function(e: Event): void {
       var me = e as MouseEvent;
-      
-    }*/
+      var ord = _Main.position_to_cell_ord(me.clientX, me.clientY);
+      if (ord['x'] < _Main.board_width && ord['y'] < _Main.board_height) {
+        //TODO: extract draw function
+/*        var cell_width = _Main.canvas_width / _Main.board_width;
+        var cell_height = _Main.canvas_height / _Main.board_height;
+        if (_Main.prev_data[_Main.selected_cell['x'] + _Main.board_width * _Main.selected_cell['y']] == '+') {
+          ctx.fillRect(
+            cell_width * (_Main.selected_cell['x']),
+            cell_height * Math.floor(_Main.selected_cell['y']),
+            cell_width,
+            cell_height
+          );
+        }
+        else {
+          ctx.clearRect(
+            cell_width * (_Main.selected_cell['x']),
+            cell_height * Math.floor(_Main.selected_cell['y']),
+            cell_width,
+            cell_height
+          );
+        }
+        if (_Main.prev_data[ord['x'] + cell_width * ord['y']] == '+') {
+          ctx.clearRect(
+            cell_width * (ord['x']),
+            cell_height * Math.floor(ord['y']),
+            cell_width,
+            cell_height
+          );
+          ctx.fillRect(
+            cell_width * (ord['x']) + 1,
+            cell_height * Math.floor(ord['y']) + 1,
+            cell_width - 2,
+            cell_height - 2
+          );
+        }
+        else {
+          ctx.fillRect(
+            cell_width * (ord['x']),
+            cell_height * Math.floor(ord['y']),
+            cell_width,
+            cell_height
+          );
+          ctx.clearRect(
+            cell_width * (ord['x']) + 1,
+            cell_height * Math.floor(ord['y']) + 1,
+            cell_width - 2,
+            cell_height - 2
+          );
+        }*/
+        _Main.selected_cell = ord;
+      }
+    };
+    dom.window.document.body.addEventListener('mousemove', mousemove_handler, false);
 
     //main loop after websocket open
     var tick = function(): void {
