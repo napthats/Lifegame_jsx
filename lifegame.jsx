@@ -11,8 +11,9 @@ final class _Main {
 
   static function position_to_cell_ord(x: number, y: number): Map.<number> {
     //TODO: decide gameboard width/height from server messages
-    var width_ord = Math.floor((x / _Main.canvas_width) * (_Main.board_width - 1));
-    var height_ord = Math.floor((y / _Main.canvas_height) * (_Main.board_height - 1));
+    //TODO: ajust position with canvas position
+    var width_ord = Math.floor((x / _Main.canvas_width) * _Main.board_width - 1);
+    var height_ord = Math.floor((y / _Main.canvas_height) * _Main.board_height - 1);
     return {x: width_ord, y: height_ord};
   }
 
