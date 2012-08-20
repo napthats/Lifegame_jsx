@@ -3,6 +3,16 @@ import 'js/web.jsx';
 final class _Main {
   static const canvas_width = 600;
   static const canvas_height = 600;
+  static var selected_cell = {x: 0, y: 0};
+  static const board_width = 60;
+  static const board_height = 60;
+
+  static function position_to_cell_ord(x: number, y: number): Map.<number> {
+    //TODO: decide gameboard width/height from server messages
+    var width_ord = Math.floor((x / _Main.canvas_width) * (_Main.board_width - 1));
+    var height_ord = Math.floor((y / _Main.canvas_height) * (_Main.board_height - 1));
+    return {x: width_ord, y: height_ord};
+  }
 
   static function main(args : string[]) : void {
     //initialize canvas
@@ -52,16 +62,16 @@ final class _Main {
     //message handler for mouse
     var mousedown_handler = function(e: Event): void {
       var me = e as MouseEvent;
-      //TODO: decide gameboard width/height from server messages
-      var board_width = 60;
-      var board_height = 60;
-      var width_ord = Math.floor((me.clientX / _Main.canvas_width) * board_width);
-      var height_ord = Math.floor((me.clientY / _Main.canvas_height) * board_height);
-      if (width_ord < board_width && height_ord < board_height) {
-        ws.send("#" + (width_ord as string) + ":" + (height_ord as string));
+      var ord = _Main.position_to_cell_ord(me.clientX, me.clientY);
+      if (ord['x'] < _Main.board_width && ord['y'] < _Main.board_height) {
+        ws.send("#" + (ord['x'] as string) + ":" + (ord['y'] as string));
       }
     };
     dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
+/*    var mousemove_handler = function(e: Event): void {
+      var me = e as MouseEvent;
+      
+    }*/
 
     //main loop after websocket open
     var tick = function(): void {

@@ -100,6 +100,23 @@ function _Main$() {
 _Main$.prototype = new _Main;
 
 /**
+ * @param {!number} x
+ * @param {!number} y
+ * @return {Object.<string, undefined|!number>}
+ */
+_Main.position_to_cell_ord$NN = function (x, y) {
+	/** @type {!number} */
+	var width_ord;
+	/** @type {!number} */
+	var height_ord;
+	width_ord = Math.floor(x / 600 * 59);
+	height_ord = Math.floor(y / 600 * 59);
+	return { x: width_ord, y: height_ord };
+};
+
+var _Main$position_to_cell_ord$NN = _Main.position_to_cell_ord$NN;
+
+/**
  * @param {Array.<undefined|!string>} args
  */
 _Main.main$AS = function (args) {
@@ -156,15 +173,12 @@ _Main.main$AS = function (args) {
 	mousedown_handler = (function (e) {
 		/** @type {MouseEvent} */
 		var me;
-		/** @type {!number} */
-		var width_ord;
-		/** @type {!number} */
-		var height_ord;
+		/** @type {Object.<string, undefined|!number>} */
+		var ord;
 		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
-		width_ord = Math.floor(me.clientX / 600 * 60);
-		height_ord = Math.floor(me.clientY / 600 * 60);
-		if (width_ord < 60 && height_ord < 60) {
-			ws.send("#" + (width_ord + "") + ":" + (height_ord + ""));
+		ord = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
+		if (ord.x < 60 && ord.y < 60) {
+			ws.send("#" + (ord.x + "") + ":" + (ord.y + ""));
 		}
 	});
 	dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
@@ -243,6 +257,11 @@ js$.prototype = new js;
 
 _Main.canvas_width = 600;
 _Main.canvas_height = 600;
+$__jsx_lazy_init(_Main, "selected_cell", function () {
+	return { x: 0, y: 0 };
+});
+_Main.board_width = 60;
+_Main.board_height = 60;
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });
