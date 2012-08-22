@@ -187,7 +187,10 @@ final class _Main {
         case 54://6 key
           _Main.selected_object = 6;//glider gun
           break;        
+        case 109://- key
+          ws.send("clear");
         default:
+//          dom.window.alert(ke.keyCode.toString());
           break;
       }
     };

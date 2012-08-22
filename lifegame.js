@@ -264,6 +264,8 @@ _Main.main$AS = function (args) {
 		case 54:
 			_Main.selected_object = 6;
 			break;
+		case 109:
+			ws.send("clear");
 		default:
 			break;
 		}
