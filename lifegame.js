@@ -117,6 +117,33 @@ _Main.position_to_cell_ord$NN = function (x, y) {
 var _Main$position_to_cell_ord$NN = _Main.position_to_cell_ord$NN;
 
 /**
+ * @param {!number} base_x
+ * @param {!number} base_y
+ * @param {!number} object_type
+ * @return {Array.<undefined|Object.<string, undefined|!number>>}
+ */
+_Main.get_object_positions$NNN = function (base_x, base_y, object_type) {
+	switch (object_type) {
+	case 0:
+		return [ { x: base_x, y: base_y } ];
+	case 1:
+		return [ { x: base_x, y: base_y }, { x: base_x + 1, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 1, y: base_y + 1 } ];
+	case 2:
+	case 3:
+		return [ { x: base_x, y: base_y }, { x: base_x + 1, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 2, y: base_y + 1 }, { x: base_x + 2, y: base_y + 2 }, { x: base_x + 2, y: base_y + 3 }, { x: base_x + 3, y: base_y + 3 } ];
+	case 4:
+		return [ { x: base_x + 1, y: base_y }, { x: base_x + 2, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 1, y: base_y + 1 }, { x: base_x + 1, y: base_y + 2 } ];
+	case 5:
+		return [ { x: base_x + 4, y: base_y }, { x: base_x + 5, y: base_y + 1 }, { x: base_x, y: base_y + 2 }, { x: base_x + 5, y: base_y + 2 }, { x: base_x + 1, y: base_y + 3 }, { x: base_x + 2, y: base_y + 3 }, { x: base_x + 3, y: base_y + 3 }, { x: base_x + 4, y: base_y + 3 }, { x: base_x + 5, y: base_y + 3 } ];
+	case 6:
+		return [ { x: base_x + 25, y: base_y }, { x: base_x + 22, y: base_y + 1 }, { x: base_x + 23, y: base_y + 1 }, { x: base_x + 24, y: base_y + 1 }, { x: base_x + 25, y: base_y + 1 }, { x: base_x + 13, y: base_y + 2 }, { x: base_x + 21, y: base_y + 2 }, { x: base_x + 22, y: base_y + 2 }, { x: base_x + 23, y: base_y + 2 }, { x: base_x + 24, y: base_y + 2 }, { x: base_x + 34, y: base_y + 2 }, { x: base_x + 35, y: base_y + 2 }, { x: base_x + 12, y: base_y + 3 }, { x: base_x + 14, y: base_y + 3 }, { x: base_x + 21, y: base_y + 3 }, { x: base_x + 24, y: base_y + 3 }, { x: base_x + 34, y: base_y + 3 }, { x: base_x + 35, y: base_y + 3 }, { x: base_x, y: base_y + 4 }, { x: base_x + 1, y: base_y + 4 }, { x: base_x + 11, y: base_y + 4 }, { x: base_x + 15, y: base_y + 4 }, { x: base_x + 16, y: base_y + 4 }, { x: base_x + 21, y: base_y + 4 }, { x: base_x + 22, y: base_y + 4 }, { x: base_x + 23, y: base_y + 4 }, { x: base_x + 24, y: base_y + 4 }, { x: base_x, y: base_y + 5 }, { x: base_x + 1, y: base_y + 5 }, { x: base_x + 11, y: base_y + 5 }, { x: base_x + 15, y: base_y + 5 }, { x: base_x + 16, y: base_y + 5 }, { x: base_x + 22, y: base_y + 5 }, { x: base_x + 23, y: base_y + 5 }, { x: base_x + 24, y: base_y + 5 }, { x: base_x + 25, y: base_y + 5 }, { x: base_x + 11, y: base_y + 6 }, { x: base_x + 15, y: base_y + 6 }, { x: base_x + 16, y: base_y + 6 }, { x: base_x + 25, y: base_y + 6 }, { x: base_x + 12, y: base_y + 7 }, { x: base_x + 14, y: base_y + 7 }, { x: base_x + 13, y: base_y + 8 } ];
+	default:
+	}
+};
+
+var _Main$get_object_positions$NNN = _Main.get_object_positions$NNN;
+
+/**
  * @param {Array.<undefined|!string>} args
  */
 _Main.main$AS = function (args) {
@@ -129,6 +156,7 @@ _Main.main$AS = function (args) {
 	var ws;
 	var mousedown_handler;
 	var mousemove_handler;
+	var keydown_handler;
 	var tick;
 	canvas = (function (o) { return o instanceof HTMLCanvasElement ? o : null; })((function (o) { return o instanceof HTMLElement ? o : null; })(dom.document.getElementById('stage')));
 	canvas.width = 600;
@@ -183,11 +211,18 @@ _Main.main$AS = function (args) {
 		/** @type {MouseEvent} */
 		var me;
 		/** @type {Object.<string, undefined|!number>} */
+		var base_pos;
+		/** @type {Array.<undefined|Object.<string, undefined|!number>>} */
+		var pos_array;
+		/** @type {!number} */
 		var ord;
 		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
-		ord = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
-		if (ord.x < 60 && ord.y < 60) {
-			ws.send("#" + (ord.x + "") + ":" + (ord.y + ""));
+		base_pos = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
+		pos_array = _Main$get_object_positions$NNN(base_pos.x, base_pos.y, _Main.selected_object);
+		for (ord in pos_array) {
+			if (pos_array[ord].x < 60 && pos_array[ord].y < 60) {
+				ws.send("#" + (pos_array[ord].x + "") + ":" + (pos_array[ord].y + ""));
+			}
 		}
 	});
 	dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
@@ -203,6 +238,37 @@ _Main.main$AS = function (args) {
 		}
 	});
 	dom.window.document.body.addEventListener('mousemove', mousemove_handler, false);
+	keydown_handler = (function (e) {
+		/** @type {KeyboardEvent} */
+		var ke;
+		ke = (function (o) { return o instanceof KeyboardEvent ? o : null; })(e);
+		switch (ke.keyCode) {
+		case 48:
+			_Main.selected_object = 0;
+			break;
+		case 49:
+			_Main.selected_object = 1;
+			break;
+		case 50:
+			_Main.selected_object = 2;
+			break;
+		case 51:
+			_Main.selected_object = 3;
+			break;
+		case 52:
+			_Main.selected_object = 4;
+			break;
+		case 53:
+			_Main.selected_object = 5;
+			break;
+		case 54:
+			_Main.selected_object = 6;
+			break;
+		default:
+			break;
+		}
+	});
+	dom.window.document.body.addEventListener('keydown', keydown_handler, false);
 	tick = (function () {
 		ws.send("show");
 		dom.window.setTimeout(tick, 100);
@@ -286,6 +352,7 @@ _Main.board_height = 60;
 $__jsx_lazy_init(_Main, "prev_data", function () {
 	return [ "" ];
 });
+_Main.selected_object = 0;
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });
