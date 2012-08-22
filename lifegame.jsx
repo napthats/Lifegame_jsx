@@ -3,13 +3,14 @@ import 'js/web.jsx';
 final class _Main {
   static const canvas_width = 600;
   static const canvas_height = 600;
-  static var selected_cell = {x: 0, y: 0};
+  static var selected_cell_array = [{x: 0, y: 0}];
     //TODO: decide gameboard width/height from server messages
   static const board_width = 60;
   static const board_height = 60;
   //TODO: initialize with safe data
   static var prev_data = [""];
   static var selected_object = 0;
+  static var current_position = {x: 0, y: 0};
 
   static function position_to_cell_ord(x: number, y: number): Map.<number> {
     //TODO: ajust position with canvas position
@@ -29,6 +30,7 @@ final class _Main {
         return [{x: base_x, y: base_y}, {x: base_x + 1, y: base_y}, {x: base_x, y: base_y + 1}, {x: base_x + 1, y: base_y + 1}];
       case 2:
         //glider
+        return [{x: base_x + 1, y: base_y}, {x: base_x + 2, y: base_y + 1}, {x: base_x, y: base_y + 2}, {x: base_x + 1, y: base_y + 2}, {x: base_x + 2, y: base_y + 2}];
       case 3:
         //eater
         return [
@@ -100,33 +102,38 @@ final class _Main {
         }
       }
 
-      if (_Main.prev_data[_Main.selected_cell['x'] + _Main.board_width * _Main.selected_cell['y']] == '+') {
+      for (var i in _Main.selected_cell_array) {
+        var selected_cell = _Main.selected_cell_array[i];
+        if (selected_cell['x'] < _Main.board_width && selected_cell['y'] < _Main.board_height) {
+      if (_Main.prev_data[selected_cell['x'] + _Main.board_width * selected_cell['y']] == '+') {
         ctx.clearRect(
-          cell_width * (_Main.selected_cell['x']),
-          cell_height * Math.floor(_Main.selected_cell['y']),
+          cell_width * (selected_cell['x']),
+          cell_height * Math.floor(selected_cell['y']),
           cell_width,
           cell_height
         );
         ctx.fillRect(
-          cell_width * (_Main.selected_cell['x']) + 1,
-          cell_height * Math.floor(_Main.selected_cell['y']) + 1,
+          cell_width * (selected_cell['x']) + 1,
+          cell_height * Math.floor(selected_cell['y']) + 1,
           cell_width - 2,
           cell_height - 2
         );
       }
       else {
         ctx.fillRect(
-          cell_width * (_Main.selected_cell['x']),
-          cell_height * Math.floor(_Main.selected_cell['y']),
+          cell_width * (selected_cell['x']),
+          cell_height * Math.floor(selected_cell['y']),
           cell_width,
           cell_height
         );
         ctx.clearRect(
-          cell_width * (_Main.selected_cell['x']) + 1,
-          cell_height * Math.floor(_Main.selected_cell['y']) + 1,
+          cell_width * (selected_cell['x']) + 1,
+          cell_height * Math.floor(selected_cell['y']) + 1,
           cell_width - 2,
           cell_height - 2
         );
+      }
+        }
       }
     };
 
@@ -157,10 +164,10 @@ final class _Main {
     dom.window.document.body.addEventListener('mousedown', mousedown_handler, false);
     var mousemove_handler = function(e: Event): void {
       var me = e as MouseEvent;
-      var ord = _Main.position_to_cell_ord(me.clientX, me.clientY);
-      if (ord['x'] < _Main.board_width && ord['y'] < _Main.board_height) {
-        _Main.selected_cell = ord;
-      }
+      var base_pos = _Main.position_to_cell_ord(me.clientX, me.clientY);
+      _Main.current_position = base_pos;
+      _Main.selected_cell_array =
+        _Main.get_object_positions(base_pos['x'], base_pos['y'], _Main.selected_object);
     };
     dom.window.document.body.addEventListener('mousemove', mousemove_handler, false);
     var keydown_handler = function(e: Event): void {
@@ -193,6 +200,12 @@ final class _Main {
 //          dom.window.alert(ke.keyCode.toString());
           break;
       }
+      _Main.selected_cell_array =
+        _Main.get_object_positions(
+          _Main.current_position['x'],
+          _Main.current_position['y'],
+          _Main.selected_object
+        );
     };
     dom.window.document.body.addEventListener('keydown', keydown_handler, false);
 

@@ -129,6 +129,7 @@ _Main.get_object_positions$NNN = function (base_x, base_y, object_type) {
 	case 1:
 		return [ { x: base_x, y: base_y }, { x: base_x + 1, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 1, y: base_y + 1 } ];
 	case 2:
+		return [ { x: base_x + 1, y: base_y }, { x: base_x + 2, y: base_y + 1 }, { x: base_x, y: base_y + 2 }, { x: base_x + 1, y: base_y + 2 }, { x: base_x + 2, y: base_y + 2 } ];
 	case 3:
 		return [ { x: base_x, y: base_y }, { x: base_x + 1, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 2, y: base_y + 1 }, { x: base_x + 2, y: base_y + 2 }, { x: base_x + 2, y: base_y + 3 }, { x: base_x + 3, y: base_y + 3 } ];
 	case 4:
@@ -179,6 +180,8 @@ _Main.main$AS = function (args) {
 		var board_data_array;
 		/** @type {!number} */
 		var i;
+		/** @type {Object.<string, undefined|!number>} */
+		var selected_cell;
 		me = (function (o) { return o instanceof MessageEvent ? o : null; })(e);
 		message_array = (me.data + "").split(":");
 		width = message_array[0] | 0;
@@ -193,12 +196,17 @@ _Main.main$AS = function (args) {
 				ctx.fillRect(cell_width * (i % width), cell_height * Math.floor(i / width), cell_width, cell_height);
 			}
 		}
-		if (_Main.prev_data[_Main.selected_cell.x + 60 * _Main.selected_cell.y] == '+') {
-			ctx.clearRect(cell_width * _Main.selected_cell.x, cell_height * Math.floor(_Main.selected_cell.y), cell_width, cell_height);
-			ctx.fillRect(cell_width * _Main.selected_cell.x + 1, cell_height * Math.floor(_Main.selected_cell.y) + 1, cell_width - 2, cell_height - 2);
-		} else {
-			ctx.fillRect(cell_width * _Main.selected_cell.x, cell_height * Math.floor(_Main.selected_cell.y), cell_width, cell_height);
-			ctx.clearRect(cell_width * _Main.selected_cell.x + 1, cell_height * Math.floor(_Main.selected_cell.y) + 1, cell_width - 2, cell_height - 2);
+		for (i in _Main.selected_cell_array) {
+			selected_cell = _Main.selected_cell_array[i];
+			if (selected_cell.x < 60 && selected_cell.y < 60) {
+				if (_Main.prev_data[selected_cell.x + 60 * selected_cell.y] == '+') {
+					ctx.clearRect(cell_width * selected_cell.x, cell_height * Math.floor(selected_cell.y), cell_width, cell_height);
+					ctx.fillRect(cell_width * selected_cell.x + 1, cell_height * Math.floor(selected_cell.y) + 1, cell_width - 2, cell_height - 2);
+				} else {
+					ctx.fillRect(cell_width * selected_cell.x, cell_height * Math.floor(selected_cell.y), cell_width, cell_height);
+					ctx.clearRect(cell_width * selected_cell.x + 1, cell_height * Math.floor(selected_cell.y) + 1, cell_width - 2, cell_height - 2);
+				}
+			}
 		}
 	});
 	ws = new WebSocket("ws://napthats.com:8080/ws/");
@@ -230,12 +238,11 @@ _Main.main$AS = function (args) {
 		/** @type {MouseEvent} */
 		var me;
 		/** @type {Object.<string, undefined|!number>} */
-		var ord;
+		var base_pos;
 		me = (function (o) { return o instanceof MouseEvent ? o : null; })(e);
-		ord = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
-		if (ord.x < 60 && ord.y < 60) {
-			_Main.selected_cell = ord;
-		}
+		base_pos = _Main$position_to_cell_ord$NN(me.clientX, me.clientY);
+		_Main.current_position = base_pos;
+		_Main.selected_cell_array = _Main$get_object_positions$NNN(base_pos.x, base_pos.y, _Main.selected_object);
 	});
 	dom.window.document.body.addEventListener('mousemove', mousemove_handler, false);
 	keydown_handler = (function (e) {
@@ -269,6 +276,7 @@ _Main.main$AS = function (args) {
 		default:
 			break;
 		}
+		_Main.selected_cell_array = _Main$get_object_positions$NNN(_Main.current_position.x, _Main.current_position.y, _Main.selected_object);
 	});
 	dom.window.document.body.addEventListener('keydown', keydown_handler, false);
 	tick = (function () {
@@ -346,8 +354,8 @@ js$.prototype = new js;
 
 _Main.canvas_width = 600;
 _Main.canvas_height = 600;
-$__jsx_lazy_init(_Main, "selected_cell", function () {
-	return { x: 0, y: 0 };
+$__jsx_lazy_init(_Main, "selected_cell_array", function () {
+	return [ { x: 0, y: 0 } ];
 });
 _Main.board_width = 60;
 _Main.board_height = 60;
@@ -355,6 +363,9 @@ $__jsx_lazy_init(_Main, "prev_data", function () {
 	return [ "" ];
 });
 _Main.selected_object = 0;
+$__jsx_lazy_init(_Main, "current_position", function () {
+	return { x: 0, y: 0 };
+});
 $__jsx_lazy_init(dom, "window", function () {
 	return js.global.window;
 });
