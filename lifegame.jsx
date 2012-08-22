@@ -63,6 +63,9 @@ final class _Main {
           {x: base_x + 12, y: base_y + 7}, {x: base_x + 14, y: base_y + 7},
           {x: base_x + 13, y: base_y + 8}
         ];
+      case 7:
+        //pulsar seed
+        return [{x: base_x, y: base_y}, {x: base_x + 1, y: base_y}, {x: base_x + 2, y: base_y}, {x: base_x + 3, y: base_y}, {x: base_x + 4, y: base_y}, {x: base_x, y: base_y + 1}, {x: base_x + 4, y: base_y + 1}];
       default:
         assert false;
     }
@@ -193,6 +196,9 @@ final class _Main {
           break;
         case 54://6 key
           _Main.selected_object = 6;//glider gun
+          break;        
+        case 55://7 key
+          _Main.selected_object = 7;//pulsar seed
           break;        
         case 109://- key
           ws.send("clear");

@@ -138,6 +138,8 @@ _Main.get_object_positions$NNN = function (base_x, base_y, object_type) {
 		return [ { x: base_x + 4, y: base_y }, { x: base_x + 5, y: base_y + 1 }, { x: base_x, y: base_y + 2 }, { x: base_x + 5, y: base_y + 2 }, { x: base_x + 1, y: base_y + 3 }, { x: base_x + 2, y: base_y + 3 }, { x: base_x + 3, y: base_y + 3 }, { x: base_x + 4, y: base_y + 3 }, { x: base_x + 5, y: base_y + 3 } ];
 	case 6:
 		return [ { x: base_x + 25, y: base_y }, { x: base_x + 22, y: base_y + 1 }, { x: base_x + 23, y: base_y + 1 }, { x: base_x + 24, y: base_y + 1 }, { x: base_x + 25, y: base_y + 1 }, { x: base_x + 13, y: base_y + 2 }, { x: base_x + 21, y: base_y + 2 }, { x: base_x + 22, y: base_y + 2 }, { x: base_x + 23, y: base_y + 2 }, { x: base_x + 24, y: base_y + 2 }, { x: base_x + 34, y: base_y + 2 }, { x: base_x + 35, y: base_y + 2 }, { x: base_x + 12, y: base_y + 3 }, { x: base_x + 14, y: base_y + 3 }, { x: base_x + 21, y: base_y + 3 }, { x: base_x + 24, y: base_y + 3 }, { x: base_x + 34, y: base_y + 3 }, { x: base_x + 35, y: base_y + 3 }, { x: base_x, y: base_y + 4 }, { x: base_x + 1, y: base_y + 4 }, { x: base_x + 11, y: base_y + 4 }, { x: base_x + 15, y: base_y + 4 }, { x: base_x + 16, y: base_y + 4 }, { x: base_x + 21, y: base_y + 4 }, { x: base_x + 22, y: base_y + 4 }, { x: base_x + 23, y: base_y + 4 }, { x: base_x + 24, y: base_y + 4 }, { x: base_x, y: base_y + 5 }, { x: base_x + 1, y: base_y + 5 }, { x: base_x + 11, y: base_y + 5 }, { x: base_x + 15, y: base_y + 5 }, { x: base_x + 16, y: base_y + 5 }, { x: base_x + 22, y: base_y + 5 }, { x: base_x + 23, y: base_y + 5 }, { x: base_x + 24, y: base_y + 5 }, { x: base_x + 25, y: base_y + 5 }, { x: base_x + 11, y: base_y + 6 }, { x: base_x + 15, y: base_y + 6 }, { x: base_x + 16, y: base_y + 6 }, { x: base_x + 25, y: base_y + 6 }, { x: base_x + 12, y: base_y + 7 }, { x: base_x + 14, y: base_y + 7 }, { x: base_x + 13, y: base_y + 8 } ];
+	case 7:
+		return [ { x: base_x, y: base_y }, { x: base_x + 1, y: base_y }, { x: base_x + 2, y: base_y }, { x: base_x + 3, y: base_y }, { x: base_x + 4, y: base_y }, { x: base_x, y: base_y + 1 }, { x: base_x + 4, y: base_y + 1 } ];
 	default:
 	}
 };
@@ -270,6 +272,9 @@ _Main.main$AS = function (args) {
 			break;
 		case 54:
 			_Main.selected_object = 6;
+			break;
+		case 55:
+			_Main.selected_object = 7;
 			break;
 		case 109:
 			ws.send("clear");
